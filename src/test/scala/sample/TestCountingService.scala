@@ -4,7 +4,9 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import config.ConfigModule
 
-class TestCountingService(implicit config: ConfigModule) extends CountingService {
+
+// Very interesting extending a class that takes an implicit. You don't have to pass the implicit! Woah.
+class TestCountingService(implicit m: ConfigModule) extends CountingService {
   private val called = new AtomicInteger(0)
 
   override def increment(count: Int) = {

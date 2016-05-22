@@ -11,7 +11,7 @@ object CountingActor {
   case object Count
   case object Get
 
-  def props(implicit module: SystemModule): Props =
+  def props(implicit m: AuditCompanionModule with CountingModule): Props =
     Props(new CountingActor)
 }
 
@@ -19,18 +19,17 @@ object CountingActor {
  * An actor that can count using an injected CountingService.
  *
  */
-class CountingActor(implicit systemModule: SystemModule)
-    extends Actor {
+class CountingActor(implicit m: AuditCompanionModule with CountingModule) extends Actor {
 
   import CountingActor._
 
-  val auditCompanion = systemModule.auditCompanion
+  val auditCompanion = m.auditCompanion
 
   private var count: Int = 0
 
   def receive = {
     case Count =>
-      count = systemModule.countingService.increment(count)
+      count = m.countingService.increment(count)
       auditCompanion ! s"Count is now $count"
     case Get => sender ! count
   }

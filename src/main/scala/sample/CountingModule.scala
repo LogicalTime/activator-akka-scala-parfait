@@ -16,10 +16,13 @@ trait CountingModule {
 /**
  * A standard implementation configuration for CountingModule
  */
-trait StandardCountingModule extends CountingModule { this: SystemModule =>
+trait StandardCountingModule extends CountingModule {
+  m: CountingModule
+    with AuditCompanionModule
+    with ConfigModule =>
 
   lazy val countingActor: ActorRef =
-    actorSystem.actorOf(CountingActor.props(this), CountingActor.name)
+    m.actorSystem.actorOf(CountingActor.props(m), CountingActor.name)
 
-  def countingService: CountingService = new CountingService()(this)
+  def countingService: CountingService = new CountingService()(m)
 }

@@ -12,7 +12,7 @@ import scala.concurrent.duration._
  */
 object Main extends App {
 
-  implicit val config: SystemModule =
+  implicit val m: SystemModule =
     new SystemModule
       with StandardCountingModule
       with StandardAuditBusModule
@@ -20,7 +20,7 @@ object Main extends App {
       with AkkaConfigModule {}
 
   // this could be called inside a supervisor actor to create a supervisor hierarchy
-  val counter = config.countingActor
+  val counter = m.countingActor
 
   // tell it to count three times
   counter ! Count
@@ -31,7 +31,7 @@ object Main extends App {
   // scope, which means that every `CountingActor` will get its own instance of `AuditCompanion`.
   // However `AuditBus` is injected under Singleton scope. Therefore every `AuditCompanion`
   // will get a reference to the same `AuditBus`.
-  val counter2 = config.countingActor
+  val counter2 = m.countingActor
   counter2 ! Count
   counter2 ! Count
 
@@ -43,6 +43,6 @@ object Main extends App {
     println(s"Got back $result from $counter")
   }
 
-  config.actorSystem.shutdown()
-  config.actorSystem.awaitTermination()
+  m.actorSystem.shutdown()
+  m.actorSystem.awaitTermination()
 }
